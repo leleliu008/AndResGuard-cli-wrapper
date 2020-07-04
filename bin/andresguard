@@ -1,0 +1,24 @@
+#!/bin/sh
+
+VERSION='1.2.16'
+
+P=$(cd $(dirname $0);pwd)
+
+resguard() {
+    java -jar "${P}/../lib/AndResGuard-cli-$VERSION.jar" $@
+}
+
+main() {
+    case $1 in
+        -v|--version)
+            printf "%b\n" "$VERSION"
+            ;;
+        -guard)
+            shift
+            resguard "$@"
+            ;;
+        *)  resguard "$@"
+    esac
+}
+
+main $@

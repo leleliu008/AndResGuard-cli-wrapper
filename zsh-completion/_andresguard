@@ -1,0 +1,45 @@
+#compdef andresguard
+
+_commands=(
+    '-h:show andresguard command line help.'
+    '--help:show andresguard command line help.'
+    '-v:show andresguard version.'
+    '--version:show andresguard version.'
+    '-guard:guard the apk.'
+    '-repackage:use 7zip to repackage the apk.'
+)
+
+function _andresguard_commands() {
+    _describe 'command' _commands
+}
+
+function _andresguard() {
+    local context state state_descr line
+    typeset -A opt_args
+
+    _arguments \
+        '1: :_andresguard_commands' \
+        '*:: :->option'
+
+    case $state in
+        option)
+            case $words[1] in
+                -guard|-repackage)
+                    _arguments \
+                        ':inputApkFile:{_files -g "*.apk"}' \
+                        '-finalApkPath:finalApkFile:{_files -g "*.apk"}' \
+                        '-config[set the XML format config file]:configFile:{_files -g "*.xml"}' \
+                        '-mapping[set the keep mapping file]:mappingFile:{_files -g "*.xml"}' \
+                        '-7zip[set the 7zip file path]:7zipFile:_files' \
+                        '-zipalign[set the zipalign file path]:zipalignFile:_files' \
+                        '-signatureType[set the -signature type (v1 | v2)]:signatureType:(v1 v2)' \
+                        '-out[set the output directory]:outputDIR:_files'
+                    ;;
+                *);;
+            esac
+            ;;
+        *);;
+    esac
+}
+
+_andresguard "$@"
