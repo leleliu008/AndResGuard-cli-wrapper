@@ -33,7 +33,7 @@ function _andresguard() {
                         '-7zip[set the 7zip file path]:7zipFile:_files' \
                         '-zipalign[set the zipalign file path]:zipalignFile:_files' \
                         '-signatureType[set the -signature type (v1 | v2)]:signatureType:(v1 v2)' \
-                        '-out[set the output directory]:outputDIR:_files'
+                        '-out[set the output directory]:outputDIR:_files -/'
                     ;;
                 *);;
             esac
