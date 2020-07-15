@@ -86,7 +86,24 @@ main() {
         cat > bin/andresguard <<EOF
 #!/bin/sh
 
-java -jar $INSTALL_DIR/lib/AndResGuard-cli-$VERSION.jar \$@
+resguard() {
+    java -jar $INSTALL_DIR/lib/AndResGuard-cli-$VERSION.jar \$@
+}
+
+main() {
+    case \$1 in
+        -v|--version)
+            printf "$VERSION\n"
+            ;;
+        -guard)
+            shift
+            resguard \$@
+            ;;
+        *)  resguard \$@
+    esac
+}
+
+main \$@
 EOF
         
         chown -R $(own .) .

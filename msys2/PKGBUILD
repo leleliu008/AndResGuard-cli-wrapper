@@ -33,7 +33,24 @@ package() {
     cat > ${pkgdir}/usr/local/bin/andresguard <<EOF
 #!/bin/sh
 
-java -jar /usr/local/lib/AndResGuard-cli-${pkgver}.jar \$@
+resguard() {
+    java -jar /usr/local/lib/AndResGuard-cli-${pkgver}.jar \$@
+}
+
+main() {
+    case \$1 in
+        -v|--version)
+            printf "${pkgver}\n"
+            ;;
+        -guard)
+            shift
+            resguard \$@
+            ;;
+        *)  resguard \$@
+    esac
+}
+
+main \$@
 EOF
     chmod 755 ${pkgdir}/usr/local/bin/andresguard
 }
