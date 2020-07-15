@@ -11,6 +11,10 @@ dist: bin/andresguard lib/AndResGuard-cli-$(version).jar zsh-completion/_andresg
     ha256sum $(filename)
 
 clean:
-	rm $(filename)
+	rm -f $(filename)
+	rm -f  msys2/$(filename)
+	rm -f  msys2/andresguard-$(version)*.tar.gz
+	rm -rf msys2/src
+	rm -rf msys2/pkg
 
 .PHONY: clean
