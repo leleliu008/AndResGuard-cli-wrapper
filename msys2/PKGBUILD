@@ -21,7 +21,7 @@ check() {
 }
 
 package() {
-    depends('p7zip')
+    depends=('p7zip')
     
     mkdir -p ${pkgdir}/usr/local/bin
     mkdir -p ${pkgdir}/usr/local/lib
