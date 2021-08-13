@@ -1,7 +1,7 @@
 # Maintainer: fpliu <leleliu008@gmail.com>
 
 pkgname=('andresguard-cli')
-pkgver=1.2.16
+pkgver='1.2.16'
 pkgrel=1
 pkgdesc="Proguard resource for Android by wechat team"
 arch=('any')
@@ -9,7 +9,7 @@ license=('custom')
 url="https://github.com/leleliu008/andresguard-cli-wrapper"
 makedepends=()
 source=("https://github.com/leleliu008/AndResGuard-cli-wrapper/releases/download/v${pkgver}/AndResGuard-cli-${pkgver}.tar.gz")
-sha256sums=('84f704b2800a26e8625a8615235926ae714acb7530bc04ac85038b129fddc1a6')
+sha256sums=('341f44f6110afa83e92bc1713d50fd87b7416aed01dd158dfacb383e6f867cc4')
 
 build() {
     true
