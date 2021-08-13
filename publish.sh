@@ -156,9 +156,9 @@ main() {
 
     sed_in_place "s|sha256sums=(.*)|sha256sums=(\'$RELEASE_FILE_SHA256SUM\')|" PKGBUILD
     sed_in_place "s|pkgver=.*|pkgver=\'$RELEASE_VERSION\'|" PKGBUILD
-    sed_in_place "s|VERSION='[0-9].[0-9].[0-9]'|VERSION='$RELEASE_VERSION'|" install.sh
-    sed_in_place "s|v[0-9].[0-9].[0-9]|v$RELEASE_VERSION|" README.md
-    sed_in_place "s|AndResGuard-cli-[0-9].[0-9].[0-9]|AndResGuard-cli-$RELEASE_VERSION|g" README.md
+    sed_in_place "s|VERSION='[0-9].[0-9].[0-9][0-9]'|VERSION='$RELEASE_VERSION'|" install.sh
+    sed_in_place "s|v[0-9].[0-9].[0-9][0-9]|v$RELEASE_VERSION|" README.md
+    sed_in_place "s|AndResGuard-cli-[0-9].[0-9].[0-9][0-9]|AndResGuard-cli-$RELEASE_VERSION|g" README.md
 
     run makepkg
 
