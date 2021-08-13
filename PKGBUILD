@@ -9,7 +9,7 @@ license=('custom')
 url="https://github.com/leleliu008/andresguard-cli-wrapper"
 makedepends=()
 source=("https://github.com/leleliu008/AndResGuard-cli-wrapper/releases/download/v${pkgver}/AndResGuard-cli-${pkgver}.tar.gz")
-sha256sums=('434acce2989105264660b241884afbbeb6f93d0b63319e0c69f3275e4e4a85be')
+sha256sums=('0028aafc12cf099f5a3c3002bde05832b470d6a2c7005d54ca0cb7c6c5ce8e9a')
 
 build() {
     true
