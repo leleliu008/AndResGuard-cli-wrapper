@@ -7,7 +7,7 @@ a POSIX sh script wrapper for [AndResGuard-cli](https://github.com/shwenzhang/An
 |-|-|-|
 |`macOS`|[HomeBrew](http://blog.fpliu.com/it/os/macOS/software/HomeBrew)|`brew tap leleliu008/fpliu`<br>`brew install andresguard-cli`|
 |`GNU/Linux`|[LinuxBrew](http://blog.fpliu.com/it/software/LinuxBrew)|`brew tap leleliu008/fpliu`<br>`brew install andresguard-cli`|
-|`ArchLinux`<br>`ArcoLinux`<br>`Manjaro Linux`<br>`Windows/msys2`|[pacman](http://blog.fpliu.com/it/software/pacman)|`curl -LO https://github.com/leleliu008/AndResGuard-cli-wrapper/releases/download/v1.2.1666/AndResGuard-cli-1.2.16-1-any.pkg.tar.gz`<br>`pacman -Syyu --noconfirm`<br>`pacman -U AndResGuard-cli-1.2.16-1-any.pkg.tar.gz`|
+|`ArchLinux`<br>`ArcoLinux`<br>`Manjaro Linux`<br>`Windows/msys2`|[pacman](http://blog.fpliu.com/it/software/pacman)|`curl -LO https://github.com/leleliu008/AndResGuard-cli-wrapper/releases/download/v1.2.16/AndResGuard-cli-1.2.16-1-any.pkg.tar.gz`<br>`pacman -Syyu --noconfirm`<br>`pacman -U AndResGuard-cli-1.2.16-1-any.pkg.tar.gz`|
 |`Windows/WSL`|[LinuxBrew](http://blog.fpliu.com/it/software/LinuxBrew)|`brew tap leleliu008/fpliu`<br>`brew install andresguard-cli`|
 
 ## Install using shell script

@@ -146,7 +146,7 @@ main() {
     unset RELEASE_FILE_SHA256SUM
 
     RELEASE_VERSION=$(bin/andresguard --version)
-    RELEASE_FILE_NAME="andresguard-$RELEASE_VERSION.tar.gz"
+    RELEASE_FILE_NAME="AndResGuard-cli-$RELEASE_VERSION.tar.gz"
 
     run tar zvcf "$RELEASE_FILE_NAME" bin/andresguard zsh-completion/_andresguard lib/AndResGuard-cli-$RELEASE_VERSION.jar
 
@@ -158,7 +158,7 @@ main() {
     sed_in_place "s|pkgver=.*|pkgver=\'$RELEASE_VERSION\'|" PKGBUILD
     sed_in_place "s|VERSION='[0-9].[0-9].[0-9]'|VERSION='$RELEASE_VERSION'|" install.sh
     sed_in_place "s|v[0-9].[0-9].[0-9]|v$RELEASE_VERSION|" README.md
-    sed_in_place "s|andresguard-[0-9].[0-9].[0-9]|andresguard-$RELEASE_VERSION|g" README.md
+    sed_in_place "s|AndResGuard-cli-[0-9].[0-9].[0-9]|AndResGuard-cli-$RELEASE_VERSION|g" README.md
 
     run makepkg
 
@@ -166,23 +166,23 @@ main() {
     run git commit -m "'publish new version $RELEASE_VERSION'"
     run git push origin master
 
-    run gh release create v"$RELEASE_VERSION" "andresguard-$RELEASE_VERSION.tar.gz" "andresguard-$RELEASE_VERSION-1-any.pkg.tar.gz" --notes "'release $RELEASE_VERSION'"
+    run gh release create v"$RELEASE_VERSION" "AndResGuard-cli-$RELEASE_VERSION.tar.gz" "AndResGuard-cli-$RELEASE_VERSION-1-any.pkg.tar.gz" --notes "'release $RELEASE_VERSION'"
 
     run git clone git@github.com:leleliu008/homebrew-fpliu.git
     run cd homebrew-fpliu
-    sed_in_place '/url      /d' Formula/andresguard.rb
-    sed_in_place '/sha256   /d' Formula/andresguard.rb
-    sed_in_place "/homepage/a \  sha256   \"$RELEASE_FILE_SHA256SUM\"" Formula/andresguard.rb
-    sed_in_place "/homepage/a \  url      \"https://github.com/leleliu008/andresguard/releases/download/v$RELEASE_VERSION/andresguard-$RELEASE_VERSION.tar.gz\"" Formula/andresguard.rb
-    run git add Formula/andresguard.rb
-    run git commit -m "'publish new version andresguard-$RELEASE_VERSION'"
+    sed_in_place '/url      /d' Formula/andresguard-cli.rb
+    sed_in_place '/sha256   /d' Formula/andresguard-cli.rb
+    sed_in_place "/homepage/a \  sha256   \"$RELEASE_FILE_SHA256SUM\"" Formula/andresguard-cli.rb
+    sed_in_place "/homepage/a \  url      \"https://github.com/leleliu008/AndResGuard-cli-wrapper/releases/download/v$RELEASE_VERSION/AndResGuard-cli-$RELEASE_VERSION.tar.gz\"" Formula/andresguard-cli.rb
+    run git add Formula/andresguard-cli.rb
+    run git commit -m "'publish new version AndResGuard-cli-$RELEASE_VERSION'"
     run git push origin master
 
     run cd ..
 
     run rm -rf homebrew-fpliu
     run rm "$RELEASE_FILE_NAME"
-    run rm "andresguard-$RELEASE_VERSION-1-any.pkg.tar.gz"
+    run rm "AndResGuard-cli-$RELEASE_VERSION-1-any.pkg.tar.gz"
     run rm -rf pkg
     run rm -rf src
 }
