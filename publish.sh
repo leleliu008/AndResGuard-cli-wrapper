@@ -193,7 +193,6 @@ main() {
     run git push origin master
 
     run cd -
-    run pwd
 
     run rm -rf homebrew-fpliu
     run rm -f  "$RELEASE_TAR_FILE_NAME"
