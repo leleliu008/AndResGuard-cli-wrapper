@@ -142,22 +142,31 @@ main() {
     command -v makepkg > /dev/null || die "please install makepkg."
 
     unset RELEASE_VERSION
-    unset RELEASE_FILE_NAME
-    unset RELEASE_FILE_SHA256SUM
+
+    unset RELEASE_JAR_FILE_NAME
+    unset RELEASE_TAR_FILE_NAME
+    unset RELEASE_TAR_FILE_SHA256SUM
 
     RELEASE_VERSION=$(bin/andresguard --version)
-    RELEASE_FILE_NAME="AndResGuard-cli-$RELEASE_VERSION.tar.gz"
 
-    run tar zvcf "$RELEASE_FILE_NAME" bin/andresguard zsh-completion/_andresguard lib/AndResGuard-cli-$RELEASE_VERSION.jar
+    RELEASE_JAR_FILE_NAME="AndResGuard-cli-$RELEASE_VERSION.jar"
+    RELEASE_TAR_FILE_NAME="AndResGuard-cli-$RELEASE_VERSION.tar.gz"
+      MSYS2_PKG_FILE_NAME="AndResGuard-cli-$RELEASE_VERSION-1-any.pkg.tar.gz"
 
-    RELEASE_FILE_SHA256SUM=$(sha256sum "$RELEASE_FILE_NAME")
+    RELEASE_TAR_URL="https://github.com/leleliu008/AndResGuard-cli-wrapper/releases/download/v$RELEASE_VERSION/$RELEASE_TAR_FILE_NAME"
+
+    run tar zvcf "$RELEASE_TAR_FILE_NAME" bin/andresguard zsh-completion/_andresguard lib/$RELEASE_JAR_FILE_NAME
+
+    RELEASE_TAR_FILE_SHA256SUM=$(sha256sum "$RELEASE_TAR_FILE_NAME")
     
-    success "sha256sum($RELEASE_FILE_NAME)=$RELEASE_FILE_SHA256SUM"
+    success "sha256sum($RELEASE_TAR_FILE_NAME)=$RELEASE_TAR_FILE_SHA256SUM"
 
-    sed_in_place "s|sha256sums=(.*)|sha256sums=(\'$RELEASE_FILE_SHA256SUM\')|" PKGBUILD
-    sed_in_place "s|pkgver=.*|pkgver=\'$RELEASE_VERSION\'|" PKGBUILD
+    sed_in_place "s|sha256sums=(.*)|sha256sums=(\'$RELEASE_TAR_FILE_SHA256SUM\')|" PKGBUILD
+    sed_in_place "s|pkgver=.*|pkgver=\'$RELEASE_VERSION\'|"                        PKGBUILD
+
     sed_in_place "s|VERSION='[0-9].[0-9].[0-9][0-9]'|VERSION='$RELEASE_VERSION'|" install.sh
-    sed_in_place "s|v[0-9].[0-9].[0-9][0-9]|v$RELEASE_VERSION|" README.md
+
+    sed_in_place "s|v[0-9].[0-9].[0-9][0-9]|v$RELEASE_VERSION|"                                README.md
     sed_in_place "s|AndResGuard-cli-[0-9].[0-9].[0-9][0-9]|AndResGuard-cli-$RELEASE_VERSION|g" README.md
 
     run makepkg
@@ -166,23 +175,26 @@ main() {
     run git commit -m "'publish new version $RELEASE_VERSION'"
     run git push origin master
 
-    run gh release create v"$RELEASE_VERSION" "AndResGuard-cli-$RELEASE_VERSION.tar.gz" "AndResGuard-cli-$RELEASE_VERSION-1-any.pkg.tar.gz" --notes "'release $RELEASE_VERSION'"
+    run gh release create v"$RELEASE_VERSION" "$RELEASE_TAR_FILE_NAME" "$MSYS2_PKG_FILE_NAME" --notes "'release $RELEASE_VERSION'"
 
     run git clone git@github.com:leleliu008/homebrew-fpliu.git
     run cd homebrew-fpliu
+
     sed_in_place '/url      /d' Formula/andresguard-cli.rb
     sed_in_place '/sha256   /d' Formula/andresguard-cli.rb
-    sed_in_place "/homepage/a \  sha256   \"$RELEASE_FILE_SHA256SUM\"" Formula/andresguard-cli.rb
-    sed_in_place "/homepage/a \  url      \"https://github.com/leleliu008/AndResGuard-cli-wrapper/releases/download/v$RELEASE_VERSION/AndResGuard-cli-$RELEASE_VERSION.tar.gz\"" Formula/andresguard-cli.rb
+
+    sed_in_place "/homepage/a \  sha256   \"$RELEASE_TAR_FILE_SHA256SUM\"" Formula/andresguard-cli.rb
+    sed_in_place "/homepage/a \  url      \"$RELEASE_TAR_URL\""            Formula/andresguard-cli.rb
+
     run git add Formula/andresguard-cli.rb
-    run git commit -m "'publish new version AndResGuard-cli-$RELEASE_VERSION'"
+    run git commit -m "'publish new version andresguard-cli $RELEASE_VERSION'"
     run git push origin master
 
     run cd ..
 
     run rm -rf homebrew-fpliu
-    run rm "$RELEASE_FILE_NAME"
-    run rm "AndResGuard-cli-$RELEASE_VERSION-1-any.pkg.tar.gz"
+    run rm -f  "$RELEASE_TAR_FILE_NAME"
+    run rm -f    "$MSYS2_PKG_FILE_NAME"
     run rm -rf pkg
     run rm -rf src
 }
