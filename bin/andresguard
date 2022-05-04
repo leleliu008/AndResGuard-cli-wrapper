@@ -1,6 +1,6 @@
 #!/bin/sh
 
-MY_VERSION='1.2.15'
+MY_VERSION=1.2.16
 
 P=$(cd $(dirname $0);pwd)
 
