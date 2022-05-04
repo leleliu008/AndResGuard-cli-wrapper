@@ -203,7 +203,7 @@ main() {
 
     RELEASE_VERSION="$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH"
 
-    sed_in_place "s|MY_VERSION=[0-9]\+.[0-9]\+.[0-9]\+|MY_VERSION=$RELEASE_VERSION|" bin/andresguard
+    sed_in_place "s|MY_VERSION=[0-9]\+\.[0-9]\+\.[0-9]\+|MY_VERSION=$RELEASE_VERSION|" bin/andresguard
 
     RELEASE_DIR="AndResGuard-cli-$RELEASE_VERSION"
     RELEASE_FILE_NAME="$RELEASE_DIR.tar.gz"
