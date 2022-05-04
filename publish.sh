@@ -3,36 +3,40 @@
 COLOR_RED='\033[0;31m'          # Red
 COLOR_GREEN='\033[0;32m'        # Green
 COLOR_YELLOW='\033[0;33m'       # Yellow
-COLOR_BLUE='\033[0;34m'         # Blue
+COLOR_BLUE='\033[0;94m'         # Blue
 COLOR_PURPLE='\033[0;35m'       # Purple
 COLOR_OFF='\033[0m'             # Reset
 
 print() {
-    printf "%b" "$*"
+    printf '%b' "$*"
 }
 
 echo() {
-    print "$*\n"
+    printf '%b\n' "$*"
 }
 
 info() {
-    echo "$COLOR_PURPLE==>$COLOR_OFF $COLOR_GREEN$@$COLOR_OFF"
+    printf '%b\n' "💠  $*"
 }
 
-success() {
-    print "${COLOR_GREEN}[✔] $*\n${COLOR_OFF}"
+note() {
+    printf '%b\n' "${COLOR_YELLOW}🔔  $*${COLOR_OFF}" >&2
 }
 
 warn() {
-    print "${COLOR_YELLOW}🔥  $*\n${COLOR_OFF}" >&2
+    printf '%b\n' "${COLOR_YELLOW}🔥  $*${COLOR_OFF}" >&2
+}
+
+success() {
+    printf '%b\n' "${COLOR_GREEN}[✔] $*${COLOR_OFF}"
 }
 
 error() {
-    print "${COLOR_RED}[✘] $*\n${COLOR_OFF}" >&2
+    printf '%b\n' "${COLOR_RED}💔  $*${COLOR_OFF}" >&2
 }
 
 die() {
-    print "${COLOR_RED}[✘] $*\n${COLOR_OFF}" >&2
+    printf '%b\n' "${COLOR_RED}💔  $*${COLOR_OFF}" >&2
     exit 1
 }
 
@@ -71,7 +75,7 @@ step() {
 }
 
 run() {
-    info "$*"
+    echo "$COLOR_PURPLE==>$COLOR_OFF $COLOR_GREEN$@$COLOR_OFF"
     eval "$*"
 }
 
@@ -136,69 +140,107 @@ sha256sum() {
     fi
 }
 
+die_if_command_not_found() {
+    for item in $@
+    do
+        command_exists_in_filesystem $item || die "$item command not found."
+    done
+}
+
 main() {
+    for arg in $@
+    do
+        case $arg in
+            -x) set -x ; break
+        esac
+    done
+
     set -e
 
-    command -v makepkg > /dev/null || die "please install makepkg."
+    die_if_command_not_found tar gzip git gh
+
+    unset RELEASE_VERSION_MAJOR_PLUS_PLUS
+    unset RELEASE_VERSION_MINOR_PLUS_PLUS
+    unset RELEASE_VERSION_PATCH_PLUS_PLUS
+
+    while [ -n "$1" ]
+    do
+        case $1 in
+            -x) ;;
+            --major++) RELEASE_VERSION_MAJOR_PLUS_PLUS=1 ;;
+            --minor++) RELEASE_VERSION_MINOR_PLUS_PLUS=1 ;;
+            --patch++) RELEASE_VERSION_PATCH_PLUS_PLUS=1 ;;
+            *) die "unrecognized argument: $1"
+        esac
+        shift
+    done
 
     unset RELEASE_VERSION
-
-    unset RELEASE_JAR_FILE_NAME
-    unset RELEASE_TAR_FILE_NAME
-    unset RELEASE_TAR_FILE_SHA256SUM
+    unset RELEASE_VERSION_MAJOR
+    unset RELEASE_VERSION_MINOR
+    unset RELEASE_VERSION_PATCH
 
     RELEASE_VERSION=$(bin/andresguard --version)
+    RELEASE_VERSION_MAJOR=$(printf '%s\n' "$RELEASE_VERSION" | cut -d. -f1)
+    RELEASE_VERSION_MINOR=$(printf '%s\n' "$RELEASE_VERSION" | cut -d. -f2)
+    RELEASE_VERSION_PATCH=$(printf '%s\n' "$RELEASE_VERSION" | cut -d. -f3)
 
-    BASE_URL="https://github.com/leleliu008/AndResGuard-cli-wrapper/releases/download/v$RELEASE_VERSION"
+    if [ ${RELEASE_VERSION_MAJOR_PLUS_PLUS-0} -eq 0 ] && [ ${RELEASE_VERSION_MINOR_PLUS_PLUS-0} -eq 0 ] && [ ${RELEASE_VERSION_PATCH_PLUS_PLUS-0} -eq 0 ] ; then
+        die "new release version must be bigger than old version($RELEASE_VERSION)"
+    fi
 
-    RELEASE_JAR_FILE_NAME="AndResGuard-cli-$RELEASE_VERSION.jar"
-    RELEASE_TAR_FILE_NAME="AndResGuard-cli-$RELEASE_VERSION.tar.gz"
-    RELEASE_TAR_URL="$BASE_URL/$RELEASE_TAR_FILE_NAME"
+    if [ ${RELEASE_VERSION_MAJOR_PLUS_PLUS-0} -eq 1 ] ; then
+        RELEASE_VERSION_MAJOR=$(expr $RELEASE_VERSION_MAJOR + 1)
+    fi
 
-    MSYS2_PKG_FILE_NAME="AndResGuard-cli-$RELEASE_VERSION-1-any.pkg.tar.gz"
-    MSYS2_PKG_URL="$BASE_URL/$MSYS2_PKG_FILE_NAME"
+    if [ ${RELEASE_VERSION_MINOR_PLUS_PLUS-0} -eq 1 ] ; then
+        RELEASE_VERSION_MINOR=$(expr $RELEASE_VERSION_MINOR + 1)
+    fi
 
-    HOMEBREW_FORMULA_FINENAME='andresguard-cli.rb'
+    if [ ${RELEASE_VERSION_PATCH_PLUS_PLUS-0} -eq 1 ] ; then
+        RELEASE_VERSION_PATCH=$(expr $RELEASE_VERSION_PATCH + 1)
+    fi
 
-    run tar zvcf "$RELEASE_TAR_FILE_NAME" bin/andresguard zsh-completion/_andresguard lib/$RELEASE_JAR_FILE_NAME
+    RELEASE_VERSION="$RELEASE_VERSION_MAJOR.$RELEASE_VERSION_MINOR.$RELEASE_VERSION_PATCH"
 
-    RELEASE_TAR_FILE_SHA256SUM=$(sha256sum "$RELEASE_TAR_FILE_NAME")
-    
-    success "sha256sum($RELEASE_TAR_FILE_NAME)=$RELEASE_TAR_FILE_SHA256SUM"
+    sed_in_place "s|MY_VERSION=[0-9]\+.[0-9]\+.[0-9]\+|MY_VERSION=$RELEASE_VERSION|" bin/andresguard
 
-    sed_in_place "s|sha256sums=(.*)|sha256sums=(\'$RELEASE_TAR_FILE_SHA256SUM\')|" PKGBUILD
-    sed_in_place "s|pkgver=.*|pkgver=\'$RELEASE_VERSION\'|"                        PKGBUILD
+    RELEASE_DIR="AndResGuard-cli-$RELEASE_VERSION"
+    RELEASE_FILE_NAME="$RELEASE_DIR.tar.gz"
 
-    sed_in_place "s|VERSION='[0-9].[0-9].[0-9][0-9]'|VERSION='$RELEASE_VERSION'|" install.sh
+    install -d "$RELEASE_DIR"
+    ln -sf .   "$RELEASE_DIR"
 
-    sed_in_place "s|v[0-9].[0-9].[0-9][0-9]|v$RELEASE_VERSION|"                                README.md
-    sed_in_place "s|AndResGuard-cli-[0-9].[0-9].[0-9][0-9]|AndResGuard-cli-$RELEASE_VERSION|g" README.md
+    run tar zvcf "$RELEASE_FILE_NAME" "$RELEASE_DIR/bin/andresguard" "$RELEASE_DIR/lib/AndResGuard-cli-$RELEASE_VERSION.jar" "$RELEASE_DIR/zsh-completion/_andresguard"
 
-    run makepkg
+    unset RELEASE_FILE_SHA256SUM
+    RELEASE_FILE_SHA256SUM=$(sha256sum "$RELEASE_FILE_NAME")
 
-    run git add PKGBUILD README.md install.sh
+    success "sha256sum($RELEASE_FILE_NAME)=$RELEASE_FILE_SHA256SUM"
+
+    run git add bin/andresguard
     run git commit -m "'publish new version $RELEASE_VERSION'"
     run git push origin master
 
-    run gh release create v"$RELEASE_VERSION" "$RELEASE_TAR_FILE_NAME" "$MSYS2_PKG_FILE_NAME" --notes "'release $RELEASE_VERSION'"
+    run gh release create v"$RELEASE_VERSION" "$RELEASE_FILE_NAME" --notes "'release $RELEASE_VERSION'"
 
     run git clone git@github.com:leleliu008/homebrew-fpliu.git
-    run cd homebrew-fpliu/Formula
 
-    sed_in_place "/url/c    \  sha256   \"$RELEASE_TAR_FILE_SHA256SUM\"" $HOMEBREW_FORMULA_FINENAME
-    sed_in_place "/sha256/c \  url      \"$RELEASE_TAR_URL\""            $HOMEBREW_FORMULA_FINENAME
+    run cd homebrew-fpliu
 
-    run git add $HOMEBREW_FORMULA_FINENAME
-    run git commit -m "'publish new version andresguard-cli $RELEASE_VERSION'"
+    sed_in_place "/sha256   /c \  sha256   \"$RELEASE_FILE_SHA256SUM\"" Formula/andresguard.rb
+    sed_in_place "s@[0-9]\+\.[0-9]\+\.[0-9]\+@$RELEASE_VERSION@g"       Formula/andresguard.rb
+
+    run git add Formula/andresguard.rb
+    run git commit -m "'publish new version $RELEASE_VERSION'"
     run git push origin master
 
-    run cd -
+    run cd ..
 
     run rm -rf homebrew-fpliu
-    run rm -f  "$RELEASE_TAR_FILE_NAME"
-    run rm -f    "$MSYS2_PKG_FILE_NAME"
-    run rm -rf pkg
-    run rm -rf src
+    run rm "$RELEASE_FILE_NAME"
 }
+
+CURRENT_SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd) || exit 1
 
 main $@

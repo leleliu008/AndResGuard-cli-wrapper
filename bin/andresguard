@@ -1,17 +1,17 @@
 #!/bin/sh
 
-VERSION='1.2.16'
+MY_VERSION='1.2.15'
 
 P=$(cd $(dirname $0);pwd)
 
 resguard() {
-    exec java -jar "${P}/../lib/AndResGuard-cli-$VERSION.jar" $@
+    exec java -jar "${P}/../lib/AndResGuard-cli-$MY_VERSION.jar" $@
 }
 
 main() {
     case $1 in
         -v|--version)
-            printf "%b\n" "$VERSION"
+            printf "%b\n" "$MY_VERSION"
             ;;
         -guard)
             shift
