@@ -228,7 +228,7 @@ main() {
 
     success "sha256sum($RELEASE_FILE_NAME)=$RELEASE_FILE_SHA256SUM"
 
-    if [ "$(git ls-files --modified | sed -n '/bin\/andresguard/p')" = 'bin/andresguard' ]
+    if [ "$(git ls-files --modified | sed -n '/bin\/andresguard/p')" = 'bin/andresguard' ] ; then
         run git add bin/andresguard
         run git commit -m "'publish new version $RELEASE_VERSION'"
         run git push origin master
