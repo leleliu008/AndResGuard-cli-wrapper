@@ -208,8 +208,7 @@ main() {
     RELEASE_DIR="AndResGuard-cli-$RELEASE_VERSION"
     RELEASE_FILE_NAME="$RELEASE_DIR.tar.gz"
 
-    install -d "$RELEASE_DIR"
-    ln -sf .   "$RELEASE_DIR"
+    ln -sf . "$RELEASE_DIR"
 
     run tar zvcf "$RELEASE_FILE_NAME" "$RELEASE_DIR/bin/andresguard" "$RELEASE_DIR/lib/AndResGuard-cli-$RELEASE_VERSION.jar" "$RELEASE_DIR/zsh-completion/_andresguard"
 
