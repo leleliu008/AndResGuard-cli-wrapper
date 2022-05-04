@@ -228,9 +228,11 @@ main() {
 
     success "sha256sum($RELEASE_FILE_NAME)=$RELEASE_FILE_SHA256SUM"
 
-    run git add bin/andresguard
-    run git commit -m "'publish new version $RELEASE_VERSION'"
-    run git push origin master
+    if [ "$(git ls-files --modified | sed -n '/bin\/andresguard/p')" = 'bin/andresguard' ]
+        run git add bin/andresguard
+        run git commit -m "'publish new version $RELEASE_VERSION'"
+        run git push origin master
+    fi
 
     run gh release create v"$RELEASE_VERSION" "$RELEASE_FILE_NAME" --notes "'release $RELEASE_VERSION'"
 
