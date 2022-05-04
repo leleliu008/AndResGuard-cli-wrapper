@@ -208,6 +208,17 @@ main() {
     RELEASE_DIR="AndResGuard-cli-$RELEASE_VERSION"
     RELEASE_FILE_NAME="$RELEASE_DIR.tar.gz"
 
+    _on_exit() {
+        if [ -d    "$RELEASE_DIR" ] ; then
+            rm -rf "$RELEASE_DIR"
+        fi
+        if [ -f "$RELEASE_FILE_NAME" ] ; then
+            rm  "$RELEASE_FILE_NAME"
+        fi
+    }
+
+    trap _on_exit EXIT
+
     ln -sf . "$RELEASE_DIR"
 
     run tar zvcf "$RELEASE_FILE_NAME" "$RELEASE_DIR/bin/andresguard" "$RELEASE_DIR/lib/AndResGuard-cli-$RELEASE_VERSION.jar" "$RELEASE_DIR/zsh-completion/_andresguard"
