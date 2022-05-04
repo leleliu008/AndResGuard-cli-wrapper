@@ -240,10 +240,10 @@ main() {
 
     run cd homebrew-fpliu
 
-    sed_in_place "/sha256   /c \  sha256   \"$RELEASE_FILE_SHA256SUM\"" Formula/andresguard.rb
-    sed_in_place "s@[0-9]\+\.[0-9]\+\.[0-9]\+@$RELEASE_VERSION@g"       Formula/andresguard.rb
+    sed_in_place "/sha256   /c \  sha256   \"$RELEASE_FILE_SHA256SUM\"" Formula/andresguard-cli.rb
+    sed_in_place "s@[0-9]\+\.[0-9]\+\.[0-9]\+@$RELEASE_VERSION@g"       Formula/andresguard-cli.rb
 
-    run git add Formula/andresguard.rb
+    run git add Formula/andresguard-cli.rb
     run git commit -m "'publish new version $RELEASE_VERSION'"
     run git push origin master
 
